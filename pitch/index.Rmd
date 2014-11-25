@@ -6,28 +6,67 @@ job         : DR Manager
 framework   : io2012        # {io2012, html5slides, shower, dzslides, ...}
 highlighter : highlight.js  # {highlight.js, prettify, highlight}
 hitheme     : tomorrow      # 
-widgets     : []            # {mathjax, quiz, bootstrap}
+widgets     : [quiz,bootstrap]            # {mathjax, quiz, bootstrap}
 mode        : selfcontained # {standalone, draft}
 knit        : slidify::knit2slides
+ext_widgets: {rCharts: [libraries/nvd3]}
+
+--- &radio
+
+## Background Introduction of Semiconductor Wafers
+
+### Quiz 1: what is the state of art wafer size:
+
+1. 200 mm
+2. _300 mm_
+3. 450 mm
+4. 500 mm
+
+*** .explanation 
+Current state of art wafer fab output is 300 mm or 12 inch!
+
+
+--- &radio
+
+## Background in Production Uniformity Requirements
+### Quiz 2: what is the typical uniformity requirement across the wafer:
+1. 2 mm 3sigma
+2. 2 micron 3sigma
+3. _2 nm 3sigma_
+4. 2 A 3sigma
+
+*** .explanation 
+Yes, the requirement across the 300 mm wafer is in the order of 2nm!
+
+--- bg:#EEE
+
+## Function of the Shiny Application
+> 1. Preload with four wafer data
+> 2. Select wafer data for comparison with input selector
+> 3. Compare the wafer uniformity in Boxplot
+> 4. Compare the wafer uniformity acroos radius
+> 5. Fit the wafer radial uniformity with linear or GMA methods(tbd)
+
 ---
 
-## Slide 1
+## Wafer Data Comparison
+```{r simple-plot, fig.height = 6, fig.align='center', message=FALSE}
+wafers <-read.csv("allwaferdata.csv", header = TRUE)
+require(ggplot2)
+ggplot(wafers, aes(factor(id),CD)) + geom_boxplot(aes(fill = factor(id)))
+ggplot(wafers, aes(x=r, y= CD)) + geom_point(aes(color = factor(id)))
+```
 
---- .class #id 
+--- 
 
-## Slide 2
-
----
-
-## Slide 3
-
----
-
-## Slide 4
-
----
-
-## Slide 5
-
+## Interactive Wafer Uniformity Comparison
+```{r nvd3plot, results = 'asis', comment = NA, message = F, echo = F}
+wafers <-read.csv("allwaferdata.csv", header = TRUE)
+require(rCharts)
+n1 <- nPlot(CD ~ r, data = wafers, group = 'id', xlim=c(0,150), type = 'scatterChart')
+n1$xAxis(axisLabel = 'CD across wafer (mm)')
+n1$yAxis(axisLabel = 'Critical Dimension (CD) in nm')
+n1$show('inline')
+```
 
 
